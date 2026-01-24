@@ -4,14 +4,14 @@
 namespace tremolo {
 class Tremolo {
 public:
-  tremolo(){
+  Tremolo(){
     lfo.setFrequency(5.f /* Hz*/, true);
   }
   void prepare(double sampleRate, int expectedMaxFramesPerBlock) {
     const juce::dsp::ProcessSpec processSpec {
       .sampleRate = sampleRate,
-      .maximumBlockSize = static_cast<juce::unit32>(expectedMaxFramesPerBlock),
-      .getNumChannels = 1u,
+      .maximumBlockSize = static_cast<juce::uint32>(expectedMaxFramesPerBlock),
+      .numChannels = 1u,
     };
     lfo.prepare(processSpec);
   }
@@ -39,11 +39,11 @@ public:
   }
 
   void reset() noexcept {
-    lfo.reset()
+    lfo.reset();
   }
 
 private:
   // You should put class members and private functions here
-  juce::dsp::Oscillator<float>lfo;{[](auto phase){return std::sin(phase);}}
+  juce::dsp::Oscillator<float>lfo{[](auto phase){return std::sin(phase);}};
 };
 }  // namespace tremolo
