@@ -4,13 +4,13 @@
 namespace tremolo {
 class Tremolo {
 public:
-enum classLfoWaveform : size_t {
+enum class LfoWaveform : size_t {
   sine = 0,
   triangle = 1,
 
 };
   Tremolo(){
-    for(auto& lfo: lfo){
+    for(auto& lfo: lfos){
       lfo.setFrequency(5.f /* Hz*/, true);
     }
   }
@@ -21,7 +21,7 @@ enum classLfoWaveform : size_t {
       .numChannels = 1u,
     };
 
-    for(auto& lfo: lfo){
+    for(auto& lfo: lfos){
       lfo.prepare(processSpec);
     }
   }
@@ -59,22 +59,22 @@ enum classLfoWaveform : size_t {
   }
 
   void reset() noexcept {
-    for(auto& lfo: lfo){
+    for(auto& lfo: lfos){
       lfo.reset();
     }
   }
 
 private:
 // You should put class members and private functions here
-static float triangle(float phase) {
+static float triangle(float phase){
   const auto ft = phase / juce::MathConstants<float>::twoPi;
-  return 4.f * std::abs(ft - std::floor(0.5f + ft)) - 1.f;
+  return 4.f * std::abs(ft - std::floor(ft +0.5f )) - 1.f;
 }
 
   float getNextLfoValue() noexcept {
     return lfos[juce::toUnderlyingType(currentLfo)].processSample(0.f);
   }
-
+ 
   void updateLfoWaveform() {
    if (currentLfo != lfoToSet){
       currentLfo = lfoToSet;
