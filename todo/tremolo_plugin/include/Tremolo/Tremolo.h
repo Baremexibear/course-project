@@ -1,7 +1,9 @@
 #pragma once
 
+#include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_dsp/juce_dsp.h"
 namespace tremolo {
+enum class ApplySmoothing { no, yes };
 class Tremolo {
 public:
 enum class LfoWaveform : size_t {
@@ -9,10 +11,8 @@ enum class LfoWaveform : size_t {
   triangle = 1,
 
 };
-  Tremolo(){
-    for(auto& lfo: lfos){
-      lfo.setFrequency(5.f /* Hz*/, true);
-    }
+  Tremolo() {
+    setModulationRateHz(5.f, ApplySmoothing::no);
   }
   void prepare(double sampleRate, int expectedMaxFramesPerBlock) {
     const juce::dsp::ProcessSpec processSpec {
@@ -21,14 +21,32 @@ enum class LfoWaveform : size_t {
       .numChannels = 1u,
     };
 
+    lfoTransitionSmoother.reset(sampleRate, 0.025 /* 25 milliseconds */);
+
+    // allocate defensively
+    lfoSamples.resize(4u * static_cast<size_t>(expectedMaxFramesPerBlock));
+
     for(auto& lfo: lfos){
       lfo.prepare(processSpec);
     }
   }
-  void setLfoWaveform(LfoWaveform waveform) {
+  void setModulationRateHz(
+      float rateHz,
+      ApplySmoothing applySmoothing = ApplySmoothing::yes) noexcept {
+    const auto force = applySmoothing == ApplySmoothing::no;
+    for (auto& lfo : lfos) {
+      lfo.setFrequency(rateHz, force);
+    }
+  }
+  void setLfoWaveform(LfoWaveform waveform,
+                      ApplySmoothing applySmoothing = ApplySmoothing::yes) {
     jassert(waveform == LfoWaveform::sine || waveform == LfoWaveform::triangle);
-    
+
     lfoToSet = waveform;
+
+    if (applySmoothing == ApplySmoothing::no) {
+      currentLfo = waveform;
+    }
   }
 
   void process(juce::AudioBuffer<float>& buffer) noexcept {
@@ -37,11 +55,10 @@ enum class LfoWaveform : size_t {
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
       //  generate the LFO value
       const auto lfoValue = getNextLfoValue();
-      
+     
       //  calculate the modulation value
       constexpr auto modulationDepth = 0.4f;
-      const auto halfDepth = 0.5f * modulationDepth;
-      const auto modulationValue = halfDepth * lfoValue + (1.0f - halfDepth);
+      const auto modulationValue = modulationDepth * lfoValue + 1.f;
 
       // for each channel sample in the frame
       for (const auto channelIndex :
@@ -65,20 +82,30 @@ enum class LfoWaveform : size_t {
   }
 
 private:
-// You should put class members and private functions here
-static float triangle(float phase){
-  const auto ft = phase / juce::MathConstants<float>::twoPi;
-  return 4.f * std::abs(ft - std::floor(ft +0.5f )) - 1.f;
-}
+  static float triangle(float phase) {
+    const auto ft = phase / juce::MathConstants<float>::twoPi;
+    return 4.f * std::abs(ft - std::floor(ft + 0.5f)) - 1.f;
+  }
 
   float getNextLfoValue() noexcept {
+    if (lfoTransitionSmoother.isSmoothing()) {
+      return lfoTransitionSmoother.getNextValue();
+    }
+    // the argument is added to the generated sample, thus, we pass in 0
+    // to get just the generated sample
     return lfos[juce::toUnderlyingType(currentLfo)].processSample(0.f);
   }
+  
  
   void updateLfoWaveform() {
-   if (currentLfo != lfoToSet){
+    if (currentLfo != lfoToSet) {
+      lfoTransitionSmoother.setCurrentAndTargetValue(getNextLfoValue());
+      
       currentLfo = lfoToSet;
-   }
+
+      // initiate smoothing
+      lfoTransitionSmoother.setTargetValue(getNextLfoValue());
+    }
   }
   std::array<juce::dsp::Oscillator<float>, 2u> lfos{
     juce::dsp::Oscillator<float>{[](auto phase){return std::sin(phase);}},
@@ -86,5 +113,9 @@ static float triangle(float phase){
   };
   LfoWaveform currentLfo = LfoWaveform::sine;
   LfoWaveform lfoToSet = currentLfo;
+
+  juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>
+      lfoTransitionSmoother{0.f};
+  std::vector<float> lfoSamples;
 };
 }  // namespace tremolo
