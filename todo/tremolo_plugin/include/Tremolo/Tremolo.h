@@ -9,6 +9,8 @@ public:
 enum class LfoWaveform : size_t {
   sine = 0,
   triangle = 1,
+  square = 2,
+  sawtooth = 3,
 
 };
   Tremolo() {
@@ -40,7 +42,7 @@ enum class LfoWaveform : size_t {
   }
   void setLfoWaveform(LfoWaveform waveform,
                       ApplySmoothing applySmoothing = ApplySmoothing::yes) {
-    jassert(waveform == LfoWaveform::sine || waveform == LfoWaveform::triangle);
+    jassert(waveform == LfoWaveform::sine || waveform == LfoWaveform::triangle || waveform == LfoWaveform::square || waveform == LfoWaveform::sawtooth);
 
     lfoToSet = waveform;
 
@@ -87,6 +89,16 @@ private:
     return 4.f * std::abs(ft - std::floor(ft + 0.5f)) - 1.f;
   }
 
+  static float square(float phase) {
+    const auto offsetPhase = phase - juce::MathConstants<float>::halfPi;
+    return offsetPhase < juce::MathConstants<float>::pi ? 1.f : -1.f;
+  }
+
+  static float sawtooth(float phase) {
+    const auto ft = phase / juce::MathConstants<float>::twoPi;
+    return 2.f * (ft - std::floor(ft)) - 1.f;
+  }
+
   float getNextLfoValue() noexcept {
     if (lfoTransitionSmoother.isSmoothing()) {
       return lfoTransitionSmoother.getNextValue();
@@ -107,9 +119,11 @@ private:
       lfoTransitionSmoother.setTargetValue(getNextLfoValue());
     }
   }
-  std::array<juce::dsp::Oscillator<float>, 2u> lfos{
+  std::array<juce::dsp::Oscillator<float>, 4u> lfos{
     juce::dsp::Oscillator<float>{[](auto phase){return std::sin(phase);}},
     juce::dsp::Oscillator<float>{triangle},
+    juce::dsp::Oscillator<float>{square},
+    juce::dsp::Oscillator<float>{sawtooth},
   };
   LfoWaveform currentLfo = LfoWaveform::sine;
   LfoWaveform lfoToSet = currentLfo;
