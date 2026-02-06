@@ -26,7 +26,7 @@ void extractLfo(Tremolo& tremolo, juce::AudioBuffer<float>& bufferToUse) {
  */
 TEST(Tremolo, ExtractLfo) {
   for (const auto lfoWaveform :
-       {Tremolo::LfoWaveform::sine, Tremolo::LfoWaveform::triangle}) {
+       {Tremolo::LfoWaveform::sine, Tremolo::LfoWaveform::triangle, Tremolo::LfoWaveform::square, Tremolo::LfoWaveform::sawtooth}) {
     Tremolo testee;
     constexpr auto sampleRate = 48000.0;
     testee.setLfoWaveform(lfoWaveform);
@@ -39,7 +39,11 @@ TEST(Tremolo, ExtractLfo) {
 
     const auto* const fileName = lfoWaveform == Tremolo::LfoWaveform::sine
                                      ? "sineLfo.wav"
-                                     : "triangleLfo.wav";
+                                     : lfoWaveform == Tremolo::LfoWaveform::triangle
+                                     ? "triangleLfo.wav"
+                                     : lfoWaveform == Tremolo::LfoWaveform::square
+                                     ? "squareLfo.wav"
+                                     : "sawtoothLfo.wav";
 
     wolfsound::WavFileWriter::writeToFile(
         getFileOutputPath(fileName),
@@ -48,6 +52,7 @@ TEST(Tremolo, ExtractLfo) {
         wolfsound::Frequency{sampleRate});
   }
 }
+
 
 /** This test extracts the LFO used by the Tremolo effect switching the LFO
  * shape mid-processing, and saves it to a WAV file "smoothedLfo.wav".
@@ -77,7 +82,7 @@ TEST(Tremolo, LfoWaveformTransitionIsSmooth) {
   testee.setLfoWaveform(Tremolo::LfoWaveform::sine);
   extractLfo(testee, processBuffer);
   outputBuffer.copyFrom(0, 0, processBuffer, 0, 0, blockSizeSamples);
-  testee.setLfoWaveform(Tremolo::LfoWaveform::triangle);
+  testee.setLfoWaveform(Tremolo::LfoWaveform::square);
   extractLfo(testee, processBuffer);
   outputBuffer.copyFrom(0, blockSizeSamples, processBuffer, 0, 0,
                         blockSizeSamples);

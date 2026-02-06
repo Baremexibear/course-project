@@ -24,6 +24,7 @@ enum class LfoWaveform : size_t {
     };
 
     lfoTransitionSmoother.reset(sampleRate, 0.025 /* 25 milliseconds */);
+    gainSmoother.reset(sampleRate, 0.025 /* 25 milliseconds */);
 
     // allocate defensively
     lfoSamples.resize(4u * static_cast<size_t>(expectedMaxFramesPerBlock));
@@ -39,6 +40,10 @@ enum class LfoWaveform : size_t {
     for (auto& lfo : lfos) {
       lfo.setFrequency(rateHz, force);
     }
+  }
+  void setGain(float gainDb) noexcept {
+    const auto gainLinear = juce::Decibels::decibelsToGain(gainDb);
+    gainSmoother.setTargetValue(gainLinear);
   }
   void setLfoWaveform(LfoWaveform waveform,
                       ApplySmoothing applySmoothing = ApplySmoothing::yes) {
@@ -62,14 +67,17 @@ enum class LfoWaveform : size_t {
       constexpr auto modulationDepth = 0.4f;
       const auto modulationValue = modulationDepth * lfoValue + 1.f;
 
+      // get the smoothed gain value for this frame
+      const auto gainValue = gainSmoother.getNextValue();
+
       // for each channel sample in the frame
       for (const auto channelIndex :
            std::views::iota(0, buffer.getNumChannels())) {
         // get the input sample
         const auto inputSample = buffer.getSample(channelIndex, frameIndex);
 
-        // modulate the sample
-        const auto outputSample = inputSample * modulationValue;
+        // modulate the sample and apply gain
+        const auto outputSample = inputSample * modulationValue * gainValue;
 
         // set the output sample
         buffer.setSample(channelIndex, frameIndex, outputSample);
@@ -90,12 +98,12 @@ private:
   }
 
   static float square(float phase) {
-    const auto offsetPhase = phase - juce::MathConstants<float>::halfPi;
-    return offsetPhase < juce::MathConstants<float>::pi ? 1.f : -1.f;
+    return std::sin(phase) < 0.f ? 1.f : -1.f;
   }
 
   static float sawtooth(float phase) {
-    const auto ft = phase / juce::MathConstants<float>::twoPi;
+    const auto offsetPhase = phase + juce::MathConstants<float>::pi;
+    const auto ft = offsetPhase / juce::MathConstants<float>::twoPi;
     return 2.f * (ft - std::floor(ft)) - 1.f;
   }
 
@@ -130,6 +138,8 @@ private:
 
   juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>
       lfoTransitionSmoother{0.f};
+  juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>
+      gainSmoother{1.f};
   std::vector<float> lfoSamples;
 };
 }  // namespace tremolo
