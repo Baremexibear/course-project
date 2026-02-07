@@ -33,9 +33,14 @@ public:
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
 
+  juce::AudioProcessorParameter* getBypassParameter() const override;
+
 private:
   // TODO: add parameters
   Parameters parameters{*this};
+
+  BypassTransitionSmoother bypassTransitionSmoother;
+
   Tremolo tremolo;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)

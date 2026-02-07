@@ -1,5 +1,6 @@
 #pragma once
 
+#include "juce_audio_processors_headless/juce_audio_processors_headless.h"
 #include "juce_core/system/juce_PlatformDefs.h"
 namespace tremolo {
 struct Parameters {
@@ -7,6 +8,8 @@ struct Parameters {
 
   juce::AudioParameterFloat& rate;
   juce::AudioParameterFloat& gain;
+  juce::AudioParameterBool& bypassed;
+  juce::AudioParameterChoice& waveform;
 
   JUCE_DECLARE_NON_COPYABLE(Parameters)
   JUCE_DECLARE_NON_MOVEABLE(Parameters)
