@@ -9,6 +9,8 @@ TEST(JsonSerializer, SerializeToString) {
   parameters.rate = 10.f;
   parameters.bypassed = true;
   parameters.waveform = 1;
+  parameters.gain = 0.0f;
+  parameters.depth = 0.4f;
 
   const juce::String expectedOutput =
       u8R"({
@@ -16,7 +18,9 @@ TEST(JsonSerializer, SerializeToString) {
   "pluginName": "Tremolos",
   "modulationRateHz": 10.0,
   "bypassed": true,
-  "modulationWaveform": "Triangle"
+  "modulationWaveform": "Triangle",
+  "gain": 0.0,
+  "modulationDepth": 0.4
 })";
   juce::MemoryBlock block;
   juce::MemoryOutputStream outputStream{block, false};
@@ -36,7 +40,9 @@ TEST(JsonSerializer, DeserializeFromString) {
   "pluginName": "Tremolos",
   "modulationRateHz": 10.0,
   "bypassed": true,
-  "modulationWaveform": "Triangle"
+  "modulationWaveform": "Triangle",
+  "gain": 0.0,
+  "modulationDepth": 0.4
 })";
 
   juce::MemoryInputStream inputStream{
@@ -53,6 +59,8 @@ TEST(JsonSerializer, DeserializeFromString) {
   EXPECT_TRUE(parameters.bypassed);
   EXPECT_EQ(juce::String{"Triangle"},
             parameters.waveform.getCurrentChoiceName());
+  EXPECT_FLOAT_EQ(parameters.gain, 0.0f);
+  EXPECT_FLOAT_EQ(parameters.depth, 0.4f);
 }
 
 TEST(JsonSerializer, DontUpdateParametersWhenWaveformNameIsInvalid) {
@@ -63,7 +71,9 @@ TEST(JsonSerializer, DontUpdateParametersWhenWaveformNameIsInvalid) {
   "pluginName": "Tremolos",
   "modulationRateHz": 10.0,
   "bypassed": true,
-  "modulationWaveform": "Foo"
+  "modulationWaveform": "Foo",
+  "gain": 0.0,
+  "modulationDepth": 0.5
 })";
 
   juce::MemoryInputStream inputStream{
@@ -76,6 +86,7 @@ TEST(JsonSerializer, DontUpdateParametersWhenWaveformNameIsInvalid) {
   parameters.waveform = 0;
   parameters.bypassed = false;
   parameters.rate = 5.f;
+  parameters.depth = 0.5f;
 
   // when
   const auto result = JsonSerializer::deserialize(inputStream, parameters);
@@ -85,5 +96,7 @@ TEST(JsonSerializer, DontUpdateParametersWhenWaveformNameIsInvalid) {
   EXPECT_FLOAT_EQ(parameters.rate.get(), 5.f);
   EXPECT_FALSE(parameters.bypassed.get());
   EXPECT_EQ(0, parameters.waveform.getIndex());
+  EXPECT_FLOAT_EQ(parameters.gain, 0.0f);
+  EXPECT_FLOAT_EQ(parameters.depth, 0.5f);
 }
 }  // namespace tremolo

@@ -25,6 +25,7 @@ enum class LfoWaveform : size_t {
 
     lfoTransitionSmoother.reset(sampleRate, 0.025 /* 25 milliseconds */);
     gainSmoother.reset(sampleRate, 0.025 /* 25 milliseconds */);
+    depthSmoother.reset(sampleRate, 0.025 /* 25 milliseconds */);
 
     // allocate defensively
     lfoSamples.resize(4u * static_cast<size_t>(expectedMaxFramesPerBlock));
@@ -56,6 +57,10 @@ enum class LfoWaveform : size_t {
     }
   }
 
+  void setDepth(float depth) noexcept {
+    depthSmoother.setTargetValue(depth);
+  }
+
   void process(juce::AudioBuffer<float>& buffer) noexcept {
     updateLfoWaveform();
     // for each frame
@@ -64,7 +69,7 @@ enum class LfoWaveform : size_t {
       const auto lfoValue = getNextLfoValue();
      
       //  calculate the modulation value
-      constexpr auto modulationDepth = 0.4f;
+      const auto modulationDepth = depthSmoother.getNextValue();
       const auto modulationValue = modulationDepth * lfoValue + 1.f;
 
       // get the smoothed gain value for this frame
@@ -140,6 +145,8 @@ private:
       lfoTransitionSmoother{0.f};
   juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>
       gainSmoother{1.f};
+  juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>
+      depthSmoother{0.4f};
   std::vector<float> lfoSamples;
 };
 }  // namespace tremolo

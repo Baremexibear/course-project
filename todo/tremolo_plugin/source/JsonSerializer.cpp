@@ -5,6 +5,7 @@ namespace tremolo {
       float gain;
       juce::String waveform;
       bool bypassed;
+      float depth;
 
       static constexpr auto marshallingVersion = 1;
 
@@ -24,7 +25,7 @@ namespace tremolo {
           return;
         }
         
-        archive(named("modulationRateHz", t.rate), named("modulationWaveform", t.waveform), named("bypassed", t.bypassed), named("gain", t.gain));
+        archive(named("modulationRateHz", t.rate), named("bypassed", t.bypassed), named("modulationWaveform", t.waveform), named("gain", t.gain), named("modulationDepth", t.depth));
       }
     };
     SerializableParameters from(const tremolo::Parameters& parameters) {
@@ -33,6 +34,7 @@ namespace tremolo {
         .gain = parameters.gain.get(),
         .waveform = parameters.waveform.getCurrentChoiceName(),
         .bypassed = parameters.bypassed.get(),
+        .depth = parameters.depth.get(),
       };
     }
   }
@@ -65,10 +67,19 @@ juce::Result JsonSerializer::deserialize(juce::InputStream& input,
       }
       const auto modulationWaveformIndex = parameters.waveform.choices.indexOf(
         parsedParameters->waveform);
+      
+      if (modulationWaveformIndex < 0) {
+    // don't update parameters if modulation waveform name is invalid
+    return juce::Result::fail(
+        "invalid modulation waveform name; supported values are: " +
+        parameters.waveform.choices.joinIntoString(", "));
+      }
+      
       parameters.waveform = modulationWaveformIndex;
       parameters.rate = parsedParameters->rate;
       parameters.gain = parsedParameters->gain;
       parameters.bypassed = parsedParameters->bypassed;
+      parameters.depth = parsedParameters->depth;
       
       return juce::Result::ok();
 }
