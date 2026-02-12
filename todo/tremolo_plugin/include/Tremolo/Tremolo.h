@@ -96,7 +96,6 @@ enum class LfoWaveform : size_t {
     }
   }
 
-private:
   static float triangle(float phase) {
     const auto ft = phase / juce::MathConstants<float>::twoPi;
     return 4.f * std::abs(ft - std::floor(ft + 0.5f)) - 1.f;
@@ -112,6 +111,7 @@ private:
     return 2.f * (ft - std::floor(ft)) - 1.f;
   }
 
+private:
   float getNextLfoValue() noexcept {
     if (lfoTransitionSmoother.isSmoothing()) {
       return lfoTransitionSmoother.getNextValue();
