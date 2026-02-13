@@ -6,13 +6,19 @@ public:
     resized();
   }
 
+  void setStrokeWidth(float newStrokeWidth) {
+    strokeWidth = newStrokeWidth;
+    resized();
+    repaint();
+  }
+
   void resized() override {
     wavePath.clear();
     
     const auto halfHeight = getHeight() / 2;
     const auto amplitude = halfHeight - strokeWidth / 2.f;
     const auto width = getWidth();
-    const auto extension = 2;
+    const auto extension = 5;
 
     wavePath.startNewSubPath(-extension, halfHeight + amplitude * getWaveformValue(-extension));
 
