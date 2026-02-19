@@ -75,7 +75,9 @@ PluginEditor::PluginEditor(PluginProcessor& p) :
 
   setLookAndFeel(&lookAndFeel);
 
+  waveformLabel.setFont(CustomLookAndFeel.getSideLabelFont()); 
   addAndMakeVisible(waveformLabel);
+  bypassLabel.setFont(CustomLookAndFeel.getSideLabelFont());
   addAndMakeVisible(bypassLabel);
   addAndMakeVisible(gainLabel);
   depthLabel.setInterceptsMouseClicks(false, false);
