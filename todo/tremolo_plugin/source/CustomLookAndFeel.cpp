@@ -37,6 +37,7 @@ namespace tremolo {
 
       g.setColour(juce::Colour{0xFFDDECFF}.withAlpha(opacity));
         }
+      g.setFont(juce::FontOptions{}.withName("Arial Black").withHeight(19.f));
       g.drawText(button.getButtonText(), bounds, juce::Justification::centred, false);
     }
 }  // namespace tremolo

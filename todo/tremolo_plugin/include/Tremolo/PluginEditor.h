@@ -11,18 +11,23 @@ public:
   juce::ImageComponent background;
   juce::ImageComponent logo1;
 
+  juce::Label waveformLabel{"waveform label", "WAVEFORM"};
   juce::ComboBox waveformComboBox;
   juce::ComboBoxParameterAttachment waveformAttachment;
   
+  juce::Label gainLabel{"gain label", "GAIN"};
   juce::Slider gainSlider;
   juce::SliderParameterAttachment gainAttachment;
 
+  juce::Label depthLabel{"depth label", "DEPTH"};
   juce::Slider depthSlider;
   juce::SliderParameterAttachment depthAttachment;
 
+  juce::Label rateLabel{"rate label", "RATE"};
   RateSlider rateSlider;
   juce::SliderParameterAttachment rateAttachment;
 
+  juce::Label bypassLabel{"bypass label", "BYPASS"};
   juce::ToggleButton bypassButton;
   juce::ButtonParameterAttachment bypassAttachment;
 

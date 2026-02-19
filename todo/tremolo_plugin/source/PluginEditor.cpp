@@ -59,7 +59,7 @@ PluginEditor::PluginEditor(PluginProcessor& p) :
   addAndMakeVisible(bypassButton);
 
   depthSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
-  depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
+  depthSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
   depthSlider.setTextValueSuffix (" %");
   depthSlider.setDoubleClickReturnValue (true, 0.4);
   addAndMakeVisible(depthSlider);
@@ -74,6 +74,14 @@ PluginEditor::PluginEditor(PluginProcessor& p) :
   addAndMakeVisible(lfoVisualizer);
 
   setLookAndFeel(&lookAndFeel);
+
+  addAndMakeVisible(waveformLabel);
+  addAndMakeVisible(bypassLabel);
+  addAndMakeVisible(gainLabel);
+  depthLabel.setInterceptsMouseClicks(false, false);
+  addAndMakeVisible(depthLabel);
+  rateLabel.setInterceptsMouseClicks(false, false);
+  addAndMakeVisible(rateLabel);
 
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
@@ -145,6 +153,21 @@ void PluginEditor::resized() {
   lfoCurveWidthSliderBounds.removeFromRight(300);
   lfoCurveWidthSliderBounds.removeFromTop(273);
   lfoCurveWidthSlider.setBounds(lfoCurveWidthSliderBounds); 
+
+  const auto waveformLabelBounds = waveformComboBoxBounds.translated(0, -waveformComboBoxBounds.getHeight());
+  waveformLabel.setBounds(waveformLabelBounds);
+
+  const auto bypassLabelBounds = buttonBounds.translated(0, -buttonBounds.getHeight());
+  bypassLabel.setBounds(bypassLabelBounds);
+
+  const auto gainLabelBounds = gainSliderBounds.translated(0, -gainSliderBounds.getHeight());
+  gainLabel.setBounds(gainLabelBounds);
+
+  depthLabel.setJustificationType(juce::Justification::centred);
+  depthLabel.setBounds(depthSliderBounds);
+
+  rateLabel.setJustificationType(juce::Justification::centred);
+  rateLabel.setBounds(rateSliderBounds);
 
   lfoVisualizer.setBounds(18, 149, 504, 92);
 }
