@@ -32,6 +32,10 @@ public:
 
   LfoVisualizer lfoVisualizer;
 
+  juce::LookAndFeel_V1 lookAndFeelV1;
+  juce::LookAndFeel_V2 lookAndFeelV2;
+  juce::LookAndFeel_V3 lookAndFeelV3;
+  juce::LookAndFeel_V4 lookAndFeelV4;
   CustomLookAndFeel lookAndFeel;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)

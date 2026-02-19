@@ -19,6 +19,22 @@ PluginEditor::PluginEditor(PluginProcessor& p) :
   waveformAttachment.sendInitialUpdate();
   addAndMakeVisible(waveformComboBox);
 
+  lookAndFellComboBox.addItem("LookAndFeel_V1", 1);
+  lookAndFellComboBox.addItem("LookAndFeel_V2", 2);
+  lookAndFellComboBox.addItem("LookAndFeel_V3", 3);
+  lookAndFellComboBox.addItem("LookAndFeel_V4", 4);
+  lookAndFellComboBox.addItem("CustomLookAndFeel", 5);
+  lookAndFellComboBox.setSelectedId(5);
+  lookAndFellComboBox.onChange = [this] {
+    switch (lookAndFellComboBox.getSelectedId()) {
+      case 1: setLookAndFeel(&lookAndFeelV1); break;
+      case 2: setLookAndFeel(&lookAndFeelV2); break;
+      case 3: setLookAndFeel(&lookAndFeelV3); break;
+      case 4: setLookAndFeel(&lookAndFeelV4); break;
+      case 5: setLookAndFeel(&lookAndFeel); break;
+      default: break;
+    }
+  };
   addAndMakeVisible(lookAndFellComboBox);
 
   lfoCurveWidthSlider.setSliderStyle(juce::Slider::LinearHorizontal);
