@@ -1,6 +1,7 @@
 namespace tremolo {
 PluginEditor::PluginEditor(PluginProcessor& p) : 
   AudioProcessorEditor(&p), 
+  waveformAttachment{p.getParameterRefs().waveform, waveformComboBox},
   gainAttachment{p.getParameterRefs().gain, gainSlider},
   depthAttachment{p.getParameterRefs().depth, depthSlider},
   rateAttachment{p.getParameterRefs().rate, rateSlider},
@@ -13,6 +14,12 @@ PluginEditor::PluginEditor(PluginProcessor& p) :
 
   addAndMakeVisible(background);
   addAndMakeVisible(logo1);
+
+  waveformComboBox.addItemList(p.getParameterRefs().waveform.choices, 1);
+  waveformAttachment.sendInitialUpdate();
+  addAndMakeVisible(waveformComboBox);
+
+  addAndMakeVisible(lookAndFellComboBox);
 
   lfoCurveWidthSlider.setSliderStyle(juce::Slider::LinearHorizontal);
   lfoCurveWidthSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 60, 20);
@@ -68,6 +75,20 @@ void PluginEditor::resized() {
   backgroundBounds.removeFromBottom(30);
   background.setBounds(backgroundBounds);
 
+  auto waveformComboBoxBounds = bounds;
+  waveformComboBoxBounds.removeFromTop(40);
+  waveformComboBoxBounds.removeFromLeft(16);
+  waveformComboBoxBounds.removeFromRight(392);
+  waveformComboBoxBounds.removeFromBottom(176);
+  waveformComboBox.setBounds(waveformComboBoxBounds);
+  
+  auto lookAndFellComboBoxBounds = bounds;
+  lookAndFellComboBoxBounds.removeFromTop(270);
+  lookAndFellComboBoxBounds.removeFromLeft(420);
+  lookAndFellComboBoxBounds.removeFromRight(5);
+  lookAndFellComboBoxBounds.removeFromBottom(1);
+  lookAndFellComboBox.setBounds(lookAndFellComboBoxBounds);
+
   auto buttonBounds = bounds;
   buttonBounds.removeFromTop(270);
   buttonBounds.removeFromLeft(420);
@@ -77,9 +98,9 @@ void PluginEditor::resized() {
   logo1.setBounds(16, 16, 105, 24);
 
   auto depthSliderBounds = bounds;
-  depthSliderBounds.removeFromLeft(16);
-  depthSliderBounds.removeFromRight(230);
-  depthSliderBounds.removeFromTop(40);
+  depthSliderBounds.removeFromLeft(275);
+  depthSliderBounds.removeFromRight(60);
+  depthSliderBounds.removeFromTop(50);
   depthSliderBounds.removeFromBottom(180);
   depthSlider.setBounds(depthSliderBounds);
 
@@ -87,11 +108,11 @@ void PluginEditor::resized() {
   rateSliderBounds.removeFromLeft(230);
   rateSliderBounds.removeFromRight(230);
   rateSliderBounds.removeFromTop(40);
-  rateSliderBounds.removeFromBottom(180);
+  rateSliderBounds.removeFromBottom(210);
   rateSlider.setBounds(rateSliderBounds);
   
   auto gainSliderBounds = bounds;
-  gainSliderBounds.removeFromLeft(290);
+  gainSliderBounds.removeFromLeft(390);
   gainSliderBounds.removeFromTop(16);
   gainSliderBounds.removeFromBottom(180);
   gainSlider.setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::orange);

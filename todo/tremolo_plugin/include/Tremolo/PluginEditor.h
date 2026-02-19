@@ -10,6 +10,9 @@ public:
 
   juce::ImageComponent background;
   juce::ImageComponent logo1;
+
+  juce::ComboBox waveformComboBox;
+  juce::ComboBoxParameterAttachment waveformAttachment;
   
   juce::Slider gainSlider;
   juce::SliderParameterAttachment gainAttachment;
@@ -22,6 +25,8 @@ public:
 
   juce::ToggleButton bypassButton;
   juce::ButtonParameterAttachment bypassAttachment;
+
+  juce::ComboBox lookAndFellComboBox;
 
   juce::Slider lfoCurveWidthSlider;
 
