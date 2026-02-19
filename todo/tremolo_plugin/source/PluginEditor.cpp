@@ -61,7 +61,7 @@ PluginEditor::PluginEditor(PluginProcessor& p) :
 
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
-  setSize(540, 300);
+  setSize(570, 300);
 }
 
 PluginEditor::~PluginEditor() {
@@ -73,46 +73,48 @@ void PluginEditor::resized() {
 
   auto backgroundBounds = bounds;
   backgroundBounds.removeFromBottom(30);
+  backgroundBounds.removeFromRight(30);
   background.setBounds(backgroundBounds);
 
   auto waveformComboBoxBounds = bounds;
-  waveformComboBoxBounds.removeFromTop(40);
+  waveformComboBoxBounds.removeFromTop(60);
   waveformComboBoxBounds.removeFromLeft(16);
-  waveformComboBoxBounds.removeFromRight(392);
-  waveformComboBoxBounds.removeFromBottom(176);
+  waveformComboBoxBounds.removeFromRight(400);
+  waveformComboBoxBounds.removeFromBottom(200);
   waveformComboBox.setBounds(waveformComboBoxBounds);
   
   auto lookAndFellComboBoxBounds = bounds;
   lookAndFellComboBoxBounds.removeFromTop(270);
-  lookAndFellComboBoxBounds.removeFromLeft(420);
-  lookAndFellComboBoxBounds.removeFromRight(5);
+  lookAndFellComboBoxBounds.removeFromLeft(270);
+  lookAndFellComboBoxBounds.removeFromRight(30);
   lookAndFellComboBoxBounds.removeFromBottom(1);
   lookAndFellComboBox.setBounds(lookAndFellComboBoxBounds);
 
   auto buttonBounds = bounds;
-  buttonBounds.removeFromTop(270);
-  buttonBounds.removeFromLeft(420);
-  buttonBounds.removeFromRight(5);
+  buttonBounds.removeFromTop(20);
+  buttonBounds.removeFromLeft(345);
+  buttonBounds.removeFromRight(65);
+  buttonBounds.removeFromBottom(240);
   bypassButton.setBounds(buttonBounds);
   
   logo1.setBounds(16, 16, 105, 24);
 
   auto depthSliderBounds = bounds;
-  depthSliderBounds.removeFromLeft(275);
-  depthSliderBounds.removeFromRight(60);
-  depthSliderBounds.removeFromTop(50);
-  depthSliderBounds.removeFromBottom(180);
+  depthSliderBounds.removeFromLeft(330);
+  depthSliderBounds.removeFromRight(80);
+  depthSliderBounds.removeFromTop(70);
+  depthSliderBounds.removeFromBottom(168);
   depthSlider.setBounds(depthSliderBounds);
 
   auto rateSliderBounds = bounds;
   rateSliderBounds.removeFromLeft(230);
-  rateSliderBounds.removeFromRight(230);
+  rateSliderBounds.removeFromRight(260);
   rateSliderBounds.removeFromTop(40);
   rateSliderBounds.removeFromBottom(210);
   rateSlider.setBounds(rateSliderBounds);
   
   auto gainSliderBounds = bounds;
-  gainSliderBounds.removeFromLeft(390);
+  gainSliderBounds.removeFromLeft(540);
   gainSliderBounds.removeFromTop(16);
   gainSliderBounds.removeFromBottom(180);
   gainSlider.setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::orange);
@@ -124,7 +126,7 @@ void PluginEditor::resized() {
 
   auto lfoCurveWidthSliderBounds = bounds;
   lfoCurveWidthSliderBounds.removeFromLeft(0);
-  lfoCurveWidthSliderBounds.removeFromRight(270);
+  lfoCurveWidthSliderBounds.removeFromRight(300);
   lfoCurveWidthSliderBounds.removeFromTop(273);
   lfoCurveWidthSlider.setBounds(lfoCurveWidthSliderBounds); 
 
