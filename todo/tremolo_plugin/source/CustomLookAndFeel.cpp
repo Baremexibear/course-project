@@ -37,11 +37,11 @@ namespace tremolo {
 
       g.setColour(juce::Colour{0xFFDDECFF}.withAlpha(opacity));
         }
-      g.setFont(interMeduim().withHeight(19.f));
+      g.setFont(interBold().withHeight(19.f));
       g.drawText(button.getButtonText(), bounds, juce::Justification::centred, false);
     }
-    juce::FontOptions CustomLookAndFeel::interMedium() {
-      static const auto result = juce::Typeface::createSystemTypefaceFor(assets::Inter_Medium_ttf, assets::Inter_Medium_ttfSize);
+    juce::FontOptions CustomLookAndFeel::interBold() {
+      static const auto result = juce::Typeface::createSystemTypefaceFor(assets::Inter_Bold_ttf, assets::Inter_Bold_ttfSize);
 
       return juce::FontOptions(result);
     }

@@ -6,10 +6,11 @@ public:
     void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
 
     static juce::FontOptions getSideLabelFont() {
-        return interMedium().withHeight(12.f);
+        return interBold().withHeight(12.f);
     }
 
 private:
    static juce::FontOptions interMedium();
+   static juce::FontOptions interBold();
 };
 }  // namespace tremolo
